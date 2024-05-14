@@ -1,1 +1,1 @@
-# gp-booking
+# GP-booking
