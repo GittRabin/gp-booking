@@ -24,7 +24,7 @@ const features = [
 
 const Features = () => {
   return (
-    <Container maxWidth='lg' sx={{ py: 8 }}>
+    <Container maxWidth='lg' sx={{ py: 1, marginBottom: 8 }}>
       <Grid container spacing={4}>
         {features.map((feature) => (
           <Grid item xs={12} sm={6} md={3} key={feature.title}>

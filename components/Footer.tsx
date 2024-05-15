@@ -5,7 +5,7 @@ import { Box, Container, Grid, Link, Typography } from '@mui/material';
 
 const Footer = () => {
   return (
-    <Box sx={{ bgcolor: 'background.paper', py: 6 }}>
+    <Box sx={{ bgcolor: 'background.paper', py: 8 }}>
       <Container maxWidth='lg'>
         <Grid container spacing={4} justifyContent='space-between'>
           <Grid item xs={12} sm={4} md={3}>
