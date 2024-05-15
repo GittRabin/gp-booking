@@ -192,7 +192,7 @@ const Hero = () => {
           variant='h3'
           component='h1'
           gutterBottom
-          textAlign={{ xs: 'center', md: 'left' }}
+          textAlign={{ xs: 'center', md: 'center' }}
         >
           Book your next healthcare appointment
         </Typography>
@@ -200,7 +200,7 @@ const Hero = () => {
           variant='h6'
           color='textSecondary'
           paragraph
-          textAlign={{ xs: 'center', md: 'left' }}
+          textAlign={{ xs: 'center', md: 'center' }}
         >
           Find, book and add your favourite practitioners to your care team.
         </Typography>
