@@ -59,7 +59,7 @@ const Footer = () => {
         </Grid>
         <Box mt={4} textAlign='center'>
           <Typography variant='body2' color='textSecondary'>
-            © 2024 HotDoc Online Pty Ltd
+            © 2024 HelloDoc Online Pty Ltd
           </Typography>
         </Box>
       </Container>
