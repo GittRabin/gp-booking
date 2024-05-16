@@ -139,6 +139,7 @@ import {
   Button,
   InputAdornment,
   IconButton,
+  Hidden,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -248,19 +249,26 @@ const Hero = () => {
               ),
             }}
           />
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={handleSearch}
-            sx={{
-              minWidth: 120, // Ensuring the width aligns with other input fields
-              height: 56, // Match the height of the TextFields
-              borderRadius: '4px', // Match the border radius of the TextFields
-              margin: '0 8px', // Consistent spacing
-            }}
-          >
-            <SearchIcon />
-          </Button>
+          <Hidden mdUp>
+            <Button variant='contained' color='primary' sx={{ width: '100%' }}>
+              Search
+            </Button>
+          </Hidden>
+          <Hidden mdDown>
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={handleSearch}
+              sx={{
+                minWidth: 120, // Ensuring the width aligns with other input fields
+                height: 56, // Match the height of the TextFields
+                borderRadius: '4px', // Match the border radius of the TextFields
+                margin: '0 8px', // Consistent spacing
+              }}
+            >
+              <SearchIcon />
+            </Button>
+          </Hidden>
         </Paper>
       </Container>
     </Box>

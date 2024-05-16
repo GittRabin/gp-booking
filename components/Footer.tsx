@@ -42,7 +42,7 @@ const Footer = () => {
           </Grid>
           <Grid item xs={12} sm={4} md={3}>
             <Typography variant='h6' gutterBottom>
-              HotDoc
+              HelloDoc
             </Typography>
             <Link href='#' variant='subtitle1' color='textSecondary'>
               About us
