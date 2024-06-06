@@ -1,12 +1,12 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import PatientRegistration from '@/components/PatientRegistration';
+import DoctorRegistration from '@/components/DoctorRegistration';
 
 export default function AuthPage() {
   return (
     <div>
       <Header />
-      <PatientRegistration />
+      <DoctorRegistration />
       <Footer />
     </div>
   );
