@@ -18,6 +18,10 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 
@@ -47,6 +51,7 @@ const ManageAppointments: React.FC = () => {
   const [openModifyDialog, setOpenModifyDialog] = useState(false);
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
+  const [newStatus, setNewStatus] = useState('');
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -62,6 +67,7 @@ const ManageAppointments: React.FC = () => {
     setSelectedAppointment(appointment);
     setNewDate(appointment.date);
     setNewTime(appointment.time);
+    setNewStatus(appointment.status);
     setOpenModifyDialog(true);
   };
 
@@ -72,16 +78,18 @@ const ManageAppointments: React.FC = () => {
 
   const confirmCancel = async () => {
     if (selectedAppointment) {
-      const response = await fetch('/api/appointments', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: selectedAppointment.id,
-          status: 'CANCELLED',
-        }),
-      });
+      const response = await fetch(
+        `/api/appointments/${selectedAppointment.id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: 'CANCELLED',
+          }),
+        }
+      );
 
       if (response.ok) {
         setAppointments((prev) =>
@@ -101,23 +109,26 @@ const ManageAppointments: React.FC = () => {
 
   const confirmModify = async () => {
     if (selectedAppointment) {
-      const response = await fetch('/api/appointments', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: selectedAppointment.id,
-          date: newDate,
-          time: newTime,
-        }),
-      });
+      const response = await fetch(
+        `/api/appointments/${selectedAppointment.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: newDate,
+            time: newTime,
+            status: newStatus,
+          }),
+        }
+      );
 
       if (response.ok) {
         setAppointments((prev) =>
           prev.map((appt) =>
             appt.id === selectedAppointment.id
-              ? { ...appt, date: newDate, time: newTime, status: 'PENDING' }
+              ? { ...appt, date: newDate, time: newTime, status: newStatus }
               : appt
           )
         );
@@ -241,7 +252,20 @@ const ManageAppointments: React.FC = () => {
             value={newTime}
             onChange={(e) => setNewTime(e.target.value)}
             variant='outlined'
+            sx={{ mb: 2 }}
           />
+          <FormControl fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value as string)}
+              label='Status'
+            >
+              <MenuItem value='PENDING'>PENDING</MenuItem>
+              <MenuItem value='CONFIRMED'>CONFIRMED</MenuItem>
+              <MenuItem value='CANCELLED'>CANCELLED</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color='primary'>

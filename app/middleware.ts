@@ -22,5 +22,5 @@ export async function middleware(req: any) {
 
 // Specify the paths that need to be protected
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/api/:path*'],
 };

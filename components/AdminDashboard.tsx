@@ -11,6 +11,12 @@ import {
   Grid,
   Tabs,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 import { Clinic, DoctorWithUser, Patient, Appointment } from '../types';
 
@@ -94,6 +100,22 @@ const AdminDashboard: React.FC = () => {
     setTabIndex(newValue);
   };
 
+  const formatDate = (date: string) => {
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString();
+  };
+
+  const formatTime = (time: string) => {
+    const [hour, minute] = time.split(':');
+    const dateObj = new Date();
+    dateObj.setHours(parseInt(hour, 10));
+    dateObj.setMinutes(parseInt(minute, 10));
+    return dateObj.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <Container>
       <Typography variant='h4' gutterBottom>
@@ -158,13 +180,24 @@ const AdminDashboard: React.FC = () => {
               Clinics List
             </Typography>
             <Paper sx={{ p: 3 }}>
-              <ul>
-                {clinics.map((clinic) => (
-                  <li key={clinic.id}>
-                    {clinic.name} - {clinic.location}
-                  </li>
-                ))}
-              </ul>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Location</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {clinics.map((clinic) => (
+                      <TableRow key={clinic.id}>
+                        <TableCell>{clinic.name}</TableCell>
+                        <TableCell>{clinic.location}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Paper>
           </Grid>
         </Grid>
@@ -220,6 +253,7 @@ const AdminDashboard: React.FC = () => {
                 <TextField
                   name='password'
                   label='Password'
+                  type='password'
                   value={doctorForm.password}
                   onChange={(event) =>
                     handleInputChange(event, doctorForm, setDoctorForm)
@@ -238,13 +272,26 @@ const AdminDashboard: React.FC = () => {
               Doctors List
             </Typography>
             <Paper sx={{ p: 3 }}>
-              <ul>
-                {doctors.map((doctor) => (
-                  <li key={doctor.id}>
-                    {doctor.name} - {doctor.location}
-                  </li>
-                ))}
-              </ul>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Location</TableCell>
+                      <TableCell>Email</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {doctors.map((doctor) => (
+                      <TableRow key={doctor.id}>
+                        <TableCell>{doctor.name}</TableCell>
+                        <TableCell>{doctor.location}</TableCell>
+                        <TableCell>{doctor.user.email}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Paper>
           </Grid>
         </Grid>
@@ -290,6 +337,7 @@ const AdminDashboard: React.FC = () => {
                 <TextField
                   name='password'
                   label='Password'
+                  type='password'
                   value={patientForm.password}
                   onChange={(event) =>
                     handleInputChange(event, patientForm, setPatientForm)
@@ -308,11 +356,24 @@ const AdminDashboard: React.FC = () => {
               Patients List
             </Typography>
             <Paper sx={{ p: 3 }}>
-              <ul>
-                {patients.map((patient) => (
-                  <li key={patient.id}>{patient.name}</li>
-                ))}
-              </ul>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Email</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {patients.map((patient) => (
+                      <TableRow key={patient.id}>
+                        <TableCell>{patient.name}</TableCell>
+                        <TableCell>{patient.email}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Paper>
           </Grid>
         </Grid>
@@ -420,15 +481,32 @@ const AdminDashboard: React.FC = () => {
               Appointments List
             </Typography>
             <Paper sx={{ p: 3 }}>
-              <ul>
-                {appointments.map((appointment) => (
-                  <li key={appointment.id}>
-                    {appointment.date} - {appointment.time} - Doctor:{' '}
-                    {appointment.doctorId} - Patient: {appointment.patientId} -
-                    Clinic: {appointment.clinicId}
-                  </li>
-                ))}
-              </ul>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Doctor</TableCell>
+                      <TableCell>Clinic</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Time</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {appointments.map((appointment) => (
+                      <TableRow key={appointment.id}>
+                        <TableCell>
+                          {appointment.doctors[0]?.doctor.user.name}
+                        </TableCell>
+                        <TableCell>{appointment.clinic.name}</TableCell>
+                        <TableCell>{formatDate(appointment.date)}</TableCell>
+                        <TableCell>{formatTime(appointment.time)}</TableCell>
+                        <TableCell>{appointment.status}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Paper>
           </Grid>
         </Grid>
