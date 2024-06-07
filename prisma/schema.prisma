@@ -95,6 +95,7 @@ model Clinic {
   id           String         @id @default(cuid())
   name         String
   location     String
+  postcode     String?
   doctors      ClinicDoctor[]
   appointments Appointment[]
 }
