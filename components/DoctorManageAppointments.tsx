@@ -18,18 +18,25 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Select,
   MenuItem,
-  InputLabel,
+  Select,
   FormControl,
+  InputLabel,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
+
+type AppointmentStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'CANCELLED'
+  | 'RESCHEDULED'
+  | 'COMPLETED';
 
 type Appointment = {
   id: string;
   date: string;
   time: string;
-  status: string;
+  status: AppointmentStatus;
   doctors: {
     doctor: {
       user: {
@@ -42,7 +49,7 @@ type Appointment = {
   };
 };
 
-const ManageAppointments: React.FC = () => {
+const DoctorManageAppointments: React.FC = () => {
   const { data: session, status } = useSession();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedAppointment, setSelectedAppointment] =
@@ -51,7 +58,7 @@ const ManageAppointments: React.FC = () => {
   const [openModifyDialog, setOpenModifyDialog] = useState(false);
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
-  const [newStatus, setNewStatus] = useState('');
+  const [newStatus, setNewStatus] = useState<AppointmentStatus>('PENDING');
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -78,18 +85,16 @@ const ManageAppointments: React.FC = () => {
 
   const confirmCancel = async () => {
     if (selectedAppointment) {
-      const response = await fetch(
-        `/api/appointments/${selectedAppointment.id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            status: 'CANCELLED',
-          }),
-        }
-      );
+      const response = await fetch('/api/appointments', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: selectedAppointment.id,
+          status: 'CANCELLED',
+        }),
+      });
 
       if (response.ok) {
         setAppointments((prev) =>
@@ -109,20 +114,18 @@ const ManageAppointments: React.FC = () => {
 
   const confirmModify = async () => {
     if (selectedAppointment) {
-      const response = await fetch(
-        `/api/appointments/${selectedAppointment.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            date: newDate,
-            time: newTime,
-            status: newStatus,
-          }),
-        }
-      );
+      const response = await fetch('/api/appointments', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: selectedAppointment.id,
+          date: newDate,
+          time: newTime,
+          status: newStatus,
+        }),
+      });
 
       if (response.ok) {
         setAppointments((prev) =>
@@ -233,7 +236,7 @@ const ManageAppointments: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openModifyDialog} onClose={handleClose}>
+      <Dialog fullWidth open={openModifyDialog} onClose={handleClose}>
         <DialogTitle>Modify Appointment</DialogTitle>
         <DialogContent>
           <TextField
@@ -243,7 +246,7 @@ const ManageAppointments: React.FC = () => {
             value={newDate}
             onChange={(e) => setNewDate(e.target.value)}
             variant='outlined'
-            sx={{ mb: 2 }}
+            sx={{ mb: 4 }}
           />
           <TextField
             fullWidth
@@ -254,24 +257,28 @@ const ManageAppointments: React.FC = () => {
             variant='outlined'
             sx={{ mb: 2 }}
           />
-          <FormControl fullWidth>
+          <FormControl fullWidth variant='outlined'>
             <InputLabel>Status</InputLabel>
             <Select
               value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value as string)}
+              onChange={(e) =>
+                setNewStatus(e.target.value as AppointmentStatus)
+              }
               label='Status'
             >
-              <MenuItem value='PENDING'>PENDING</MenuItem>
-              <MenuItem value='CONFIRMED'>CONFIRMED</MenuItem>
-              <MenuItem value='CANCELLED'>CANCELLED</MenuItem>
+              <MenuItem value='PENDING'>Pending</MenuItem>
+              <MenuItem value='CONFIRMED'>Confirmed</MenuItem>
+              <MenuItem value='CANCELLED'>Cancelled</MenuItem>
+              <MenuItem value='RESCHEDULED'>Rescheduled</MenuItem>
+              <MenuItem value='COMPLETED'>Completed</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
+          <Button variant='contained' onClick={handleClose} color='secondary'>
             Cancel
           </Button>
-          <Button onClick={confirmModify} color='primary'>
+          <Button variant='contained' onClick={confirmModify} color='primary'>
             Save Changes
           </Button>
         </DialogActions>
@@ -280,4 +287,4 @@ const ManageAppointments: React.FC = () => {
   );
 };
 
-export default ManageAppointments;
+export default DoctorManageAppointments;

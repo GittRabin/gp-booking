@@ -119,18 +119,35 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const { id, date, time } = body;
+  const { id, date, time, status } = body;
 
-  const updatedAppointment = await prisma.appointment.update({
-    where: { id },
-    data: {
-      date: new Date(date),
-      time,
-      status: 'PENDING',
-    },
-  });
+  // Construct the update data
+  let data: { date?: Date; time?: string; status?: string } = {};
 
-  return NextResponse.json(updatedAppointment, { status: 200 });
+  if (date) {
+    data.date = new Date(date);
+  }
+  if (time) {
+    data.time = time;
+  }
+  if (status) {
+    data.status = status;
+  }
+
+  try {
+    const updatedAppointment = await prisma.appointment.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(updatedAppointment, { status: 200 });
+  } catch (error) {
+    console.error('Failed to update appointment:', error);
+    return NextResponse.json(
+      { error: 'Failed to update appointment' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PATCH(request: Request) {

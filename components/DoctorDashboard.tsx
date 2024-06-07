@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
-import DoctorManageAppointments from '@/components/ManageAppointments';
+import DoctorManageAppointments from '@/components/DoctorManageAppointments';
 
 const DoctorDashboard = () => {
   const [view, setView] = useState<'make' | 'manage'>('make');

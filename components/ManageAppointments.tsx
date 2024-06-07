@@ -203,7 +203,7 @@ const ManageAppointments: React.FC = () => {
         </TableContainer>
       </Paper>
 
-      <Dialog open={openCancelDialog} onClose={handleClose}>
+      <Dialog fullWidth open={openCancelDialog} onClose={handleClose}>
         <DialogTitle>Cancel Appointment</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -232,7 +232,7 @@ const ManageAppointments: React.FC = () => {
             value={newDate}
             onChange={(e) => setNewDate(e.target.value)}
             variant='outlined'
-            sx={{ mb: 2 }}
+            sx={{ mb: 4 }}
           />
           <TextField
             fullWidth
@@ -244,10 +244,10 @@ const ManageAppointments: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
+          <Button variant='contained' onClick={handleClose} color='secondary'>
             Cancel
           </Button>
-          <Button onClick={confirmModify} color='primary'>
+          <Button variant='contained' onClick={confirmModify} color='primary'>
             Save Changes
           </Button>
         </DialogActions>
