@@ -38,17 +38,39 @@ export async function GET() {
   }
 
   if (roles.isDoctor) {
-    const appointments = await prisma.doctorAppointment.findMany({
+    const doctor = await prisma.doctor.findUnique({
       where: {
-        doctorId: session.user.id,
+        userId: session.user.id,
+      },
+    });
+
+    if (!doctor)
+      return NextResponse.json({ error: 'Doctor not found' }, { status: 404 });
+
+    const doctorAppointments = await prisma.doctorAppointment.findMany({
+      where: {
+        doctorId: doctor.id,
       },
       include: {
-        doctor: true,
-        appointment: true,
+        appointment: {
+          include: {
+            clinic: true,
+            doctors: {
+              include: {
+                doctor: {
+                  include: {
+                    user: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
     // process this data to match the structure of the patient's appointments to provide as above get request for patient
+    const appointments = doctorAppointments.map((da) => da.appointment);
 
     return NextResponse.json(appointments);
   }
@@ -82,9 +104,13 @@ export async function POST(request: Request) {
       date: new Date(date),
       time,
       status: 'PENDING',
-      doctors: {
-        create: { doctorId },
-      },
+    },
+  });
+
+  await prisma.doctorAppointment.create({
+    data: {
+      doctorId,
+      appointmentId: newAppointment.id,
     },
   });
 
