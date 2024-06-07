@@ -24,9 +24,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import LoginIcon from '@mui/icons-material/Login';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Logo from './Logo';
+import { Dashboard } from '@mui/icons-material';
 
 const Header = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -35,6 +36,7 @@ const Header = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const router = useRouter();
   const { data: session } = useSession();
+  const pathname = usePathname();
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -91,30 +93,32 @@ const Header = () => {
                 transitionDuration={250} // smoother transitions
               >
                 <List>
-                  <ListItem>
-                    <Typography
-                      variant='subtitle2'
-                      component='h2'
-                      sx={{
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      List your practice
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <SearchIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Search' />
-                  </ListItem>
                   {!session ? (
-                    <ListItem button onClick={handleLoginRedirect}>
-                      <ListItemIcon>
-                        <LoginIcon />
-                      </ListItemIcon>
-                      <ListItemText primary='Log in / Sign up' />
-                    </ListItem>
+                    <>
+                      <ListItem>
+                        <Typography
+                          variant='subtitle2'
+                          component='h2'
+                          sx={{
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          List your practice
+                        </Typography>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon>
+                          <SearchIcon />
+                        </ListItemIcon>
+                        <ListItemText primary='Search' />
+                      </ListItem>
+                      <ListItem button onClick={handleLoginRedirect}>
+                        <ListItemIcon>
+                          <LoginIcon />
+                        </ListItemIcon>
+                        <ListItemText primary='Log in / Sign up' />
+                      </ListItem>
+                    </>
                   ) : (
                     <ListItem button onClick={handleProfileMenuOpen}>
                       <ListItemText primary={session.user?.email} />
@@ -126,46 +130,58 @@ const Header = () => {
           ) : (
             <>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Button sx={{ textTransform: 'none' }}>
-                  <Typography
-                    variant='subtitle2'
-                    component='h2'
-                    sx={{
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    List your practice
-                  </Typography>
-                </Button>
-                <Button sx={{ textTransform: 'none' }}>
-                  <Typography
-                    variant='subtitle2'
-                    component='h2'
-                    sx={{
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Search
-                  </Typography>
-                </Button>
                 {!session ? (
-                  <Button
-                    startIcon={<LoginIcon />}
-                    sx={{ textTransform: 'none' }}
-                    onClick={handleLoginRedirect}
-                  >
-                    <Typography
-                      variant='subtitle2'
-                      component='h2'
-                      sx={{
-                        fontWeight: 'bold',
-                      }}
+                  <>
+                    <Button sx={{ textTransform: 'none' }}>
+                      <Typography
+                        variant='subtitle2'
+                        component='h2'
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        List your practice
+                      </Typography>
+                    </Button>
+                    <Button sx={{ textTransform: 'none' }}>
+                      <Typography
+                        variant='subtitle2'
+                        component='h2'
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Search
+                      </Typography>
+                    </Button>
+                    <Button
+                      startIcon={<LoginIcon />}
+                      sx={{ textTransform: 'none' }}
+                      onClick={handleLoginRedirect}
                     >
-                      Log in / Sign up
-                    </Typography>
-                  </Button>
+                      <Typography
+                        variant='subtitle2'
+                        component='h2'
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Log in / Sign up
+                      </Typography>
+                    </Button>
+                  </>
                 ) : (
                   <>
+                    {pathname === '/' && (
+                      <Button
+                        size='small'
+                        variant='contained'
+                        onClick={() => router.push('/dashboard')}
+                      >
+                        <Dashboard />
+                        <Typography>Go to Dashboard</Typography>
+                      </Button>
+                    )}
                     <IconButton onClick={handleProfileMenuOpen}>
                       <Avatar
                         alt={session.user?.name || 'User'}
