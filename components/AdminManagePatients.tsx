@@ -17,6 +17,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Container,
 } from '@mui/material';
 import { Patient } from '@prisma/client';
 
@@ -90,19 +91,17 @@ const AdminManagePatients: React.FC = () => {
   };
 
   return (
-    <Box sx={{ py: 4 }}>
+    <Container sx={{ py: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Paper sx={{ p: 3, mb: 2 }}>
-            <Button
-              variant='contained'
-              color='primary'
-              onClick={handleOpenDialog}
-            >
-              Add Patient
-            </Button>
-          </Paper>
-          <Paper sx={{ p: 3 }}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={handleOpenDialog}
+          >
+            Add Patient
+          </Button>
+          <Paper sx={{ p: 3, mt: 3 }}>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -189,7 +188,7 @@ const AdminManagePatients: React.FC = () => {
           </form>
         </DialogContent>
       </Dialog>
-    </Box>
+    </Container>
   );
 };
 

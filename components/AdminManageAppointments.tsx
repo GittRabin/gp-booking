@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import {
   Box,
   Typography,
@@ -15,7 +15,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   MenuItem,
@@ -23,8 +22,10 @@ import {
   FormControl,
   InputLabel,
   Grid,
+  DialogContentText,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import { Doctor, Clinic, Patient } from '@prisma/client';
 
 type AppointmentStatus =
   | 'PENDING'
@@ -68,6 +69,9 @@ const AdminManageAppointments: React.FC = () => {
     date: string;
     time: string;
   }>({ doctorId: '', patientId: '', clinicId: '', date: '', time: '' });
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -76,7 +80,28 @@ const AdminManageAppointments: React.FC = () => {
       setAppointments(data);
     };
 
+    const fetchDoctors = async () => {
+      const response = await fetch('/api/doctors');
+      const data: Doctor[] = await response.json();
+      setDoctors(data);
+    };
+
+    const fetchClinics = async () => {
+      const response = await fetch('/api/clinics');
+      const data: Clinic[] = await response.json();
+      setClinics(data);
+    };
+
+    const fetchPatients = async () => {
+      const response = await fetch('/api/admin/patients');
+      const data: Patient[] = await response.json();
+      setPatients(data);
+    };
+
     fetchAppointments();
+    fetchDoctors();
+    fetchClinics();
+    fetchPatients();
   }, []);
 
   const handleModify = (appointment: Appointment) => {
@@ -183,11 +208,13 @@ const AdminManageAppointments: React.FC = () => {
   };
 
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }
+    >,
     form: any,
     setForm: React.Dispatch<React.SetStateAction<any>>
   ) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target as HTMLInputElement;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -339,40 +366,61 @@ const AdminManageAppointments: React.FC = () => {
           <form onSubmit={confirmAdd}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label='Doctor ID'
-                  name='doctorId'
-                  value={appointmentForm.doctorId}
-                  onChange={(e) =>
-                    handleInputChange(e, appointmentForm, setAppointmentForm)
-                  }
-                  variant='outlined'
-                />
+                <FormControl fullWidth variant='outlined'>
+                  <InputLabel>Doctor</InputLabel>
+                  <Select
+                    name='doctorId'
+                    value={appointmentForm.doctorId}
+                    onChange={(e) =>
+                      handleInputChange(e, appointmentForm, setAppointmentForm)
+                    }
+                    label='Doctor'
+                  >
+                    {doctors.map((doctor) => (
+                      <MenuItem key={doctor.id} value={doctor.id}>
+                        {doctor.name} ({doctor.user.email})
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label='Patient ID'
-                  name='patientId'
-                  value={appointmentForm.patientId}
-                  onChange={(e) =>
-                    handleInputChange(e, appointmentForm, setAppointmentForm)
-                  }
-                  variant='outlined'
-                />
+                <FormControl fullWidth variant='outlined'>
+                  <InputLabel>Patient</InputLabel>
+                  <Select
+                    name='patientId'
+                    value={appointmentForm.patientId}
+                    onChange={(e) =>
+                      handleInputChange(e, appointmentForm, setAppointmentForm)
+                    }
+                    label='Patient'
+                  >
+                    {patients.map((patient) => (
+                      <MenuItem key={patient.id} value={patient.id}>
+                        {patient.user.name} ({patient.user.email})
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label='Clinic ID'
-                  name='clinicId'
-                  value={appointmentForm.clinicId}
-                  onChange={(e) =>
-                    handleInputChange(e, appointmentForm, setAppointmentForm)
-                  }
-                  variant='outlined'
-                />
+                <FormControl fullWidth variant='outlined'>
+                  <InputLabel>Clinic</InputLabel>
+                  <Select
+                    name='clinicId'
+                    value={appointmentForm.clinicId}
+                    onChange={(e) =>
+                      handleInputChange(e, appointmentForm, setAppointmentForm)
+                    }
+                    label='Clinic'
+                  >
+                    {clinics.map((clinic) => (
+                      <MenuItem key={clinic.id} value={clinic.id}>
+                        {clinic.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField

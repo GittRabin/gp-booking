@@ -11,51 +11,33 @@ import {
   InputAdornment,
   IconButton,
   Hidden,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import SearchDropdown from './SearchDropDown';
 
-const Hero = () => {
+const Hero: React.FC = () => {
   const [input, setInput] = useState('');
   const [service, setService] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
-  // Location
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
 
   const handleSearch = async () => {
-    if (input) {
-      const response = await fetch(`/api/search/postcode?postcode=${input}`);
-      const data = await response.json();
-      setSearchResults(data);
-    } else {
-      console.error('Input is empty');
-    }
-  };
+    const query = new URLSearchParams();
+    if (input) query.append('location', input);
+    if (service) query.append('service', service);
 
-  const handleLocationSearch = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const response = await fetch(
-            `/api/search/coordinates?lat=${latitude}&lon=${longitude}`
-          );
-          const data = await response.json();
-          setSearchResults(data);
-        },
-        (error) => {
-          console.error('Error obtaining location', error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
+    const response = await fetch(`/api/search?${query.toString()}`);
+    const data = await response.json();
+    setSearchResults(data.clinics || []);
   };
 
   const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,7 +112,7 @@ const Hero = () => {
               ),
               endAdornment: (
                 <InputAdornment position='end'>
-                  <IconButton onClick={handleLocationSearch} edge='end'>
+                  <IconButton onClick={handleSearch} edge='end'>
                     <MyLocationIcon />
                   </IconButton>
                 </InputAdornment>
@@ -164,29 +146,25 @@ const Hero = () => {
           </Hidden>
         </Paper>
         <Box mt={4}>
-          {searchResults.clinics && (
-            <Box>
-              <Typography variant='h6'>Clinics</Typography>
-              <ul>
-                {searchResults.clinics.map((clinic: any) => (
-                  <li key={clinic.id}>
-                    {clinic.name} - {clinic.location}
-                  </li>
+          {searchResults.length > 0 && (
+            <Paper sx={{ padding: 2, width: '100%' }}>
+              <List>
+                {searchResults.map((clinic: any) => (
+                  <ListItem
+                    button
+                    key={clinic.id}
+                    onClick={() => {
+                      // Redirect logic here, e.g., router.push(`/clinic/${clinic.id}`)
+                      window.location.href = `/clinic/${clinic.id}`;
+                    }}
+                  >
+                    <ListItemText
+                      primary={`${clinic.name} - ${clinic.location}`}
+                    />
+                  </ListItem>
                 ))}
-              </ul>
-            </Box>
-          )}
-          {searchResults.doctors && (
-            <Box>
-              <Typography variant='h6'>Doctors</Typography>
-              <ul>
-                {searchResults.doctors.map((doctor: any) => (
-                  <li key={doctor.id}>
-                    {doctor.user.name} - {doctor.location}
-                  </li>
-                ))}
-              </ul>
-            </Box>
+              </List>
+            </Paper>
           )}
         </Box>
       </Container>

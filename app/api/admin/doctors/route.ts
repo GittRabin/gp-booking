@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, location, email, password } = body;
+  const { name, location, email, password, clinicId } = body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -34,6 +34,15 @@ export async function POST(request: Request) {
       userId: user.id,
     },
   });
+
+  if (clinicId) {
+    await prisma.clinicDoctor.create({
+      data: {
+        clinicId,
+        doctorId: newDoctor.id,
+      },
+    });
+  }
 
   return NextResponse.json(newDoctor, { status: 201 });
 }

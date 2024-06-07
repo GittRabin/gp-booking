@@ -100,7 +100,7 @@ const AdminManageClinics: React.FC = () => {
   };
 
   return (
-    <Container>
+    <Container sx={{ py: 4 }}>
       <Button variant='contained' color='primary' onClick={handleAddClinic}>
         Add Clinic
       </Button>

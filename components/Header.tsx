@@ -182,6 +182,9 @@ const Header = () => {
                         <Typography>Go to Dashboard</Typography>
                       </Button>
                     )}
+                    <Typography variant='subtitle1' component='h1'>
+                      Hello, {session.user.name}
+                    </Typography>
                     <IconButton onClick={handleProfileMenuOpen}>
                       <Avatar
                         alt={session.user?.name || 'User'}
