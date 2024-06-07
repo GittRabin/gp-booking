@@ -9,12 +9,7 @@ const DoctorDashboard = () => {
 
   return (
     <Container maxWidth='lg'>
-      <Box sx={{ py: 4 }}>
-        <Typography variant='h4' gutterBottom>
-          Doctor Dashboard
-        </Typography>
-        <DoctorManageAppointments />
-      </Box>
+      <DoctorManageAppointments />
     </Container>
   );
 };
