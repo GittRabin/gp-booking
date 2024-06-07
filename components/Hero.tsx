@@ -21,15 +21,18 @@ const Hero = () => {
   const [input, setInput] = useState('');
   const [service, setService] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   // Location
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (input) {
-      searchByPostcode(input);
+      const response = await fetch(`/api/search/postcode?postcode=${input}`);
+      const data = await response.json();
+      setSearchResults(data);
     } else {
       console.error('Input is empty');
     }
@@ -38,9 +41,13 @@ const Hero = () => {
   const handleLocationSearch = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
-          searchByCoordinates(latitude, longitude);
+          const response = await fetch(
+            `/api/search/coordinates?lat=${latitude}&lon=${longitude}`
+          );
+          const data = await response.json();
+          setSearchResults(data);
         },
         (error) => {
           console.error('Error obtaining location', error);
@@ -51,17 +58,6 @@ const Hero = () => {
     }
   };
 
-  const searchByPostcode = (postcode: string) => {
-    console.log('Searching for postcode:', postcode);
-    // Placeholder for API call by postcode
-  };
-
-  const searchByCoordinates = (lat: number, lon: number) => {
-    console.log('Fetching practices near', lat, lon);
-    // Placeholder for API call by geographic coordinates
-  };
-
-  // Service
   const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setService(event.target.value);
     setDropdownOpen(event.target.value !== '');
@@ -97,18 +93,6 @@ const Hero = () => {
             mt: 4,
           }}
         >
-          {/* <TextField
-            fullWidth
-            placeholder='Service, practice or practitioner'
-            variant='outlined'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          /> */}
           <div style={{ position: 'relative', width: '100%' }}>
             <TextField
               fullWidth
@@ -154,7 +138,12 @@ const Hero = () => {
             }}
           />
           <Hidden mdUp>
-            <Button variant='contained' color='primary' sx={{ width: '100%' }}>
+            <Button
+              variant='contained'
+              color='primary'
+              sx={{ width: '100%' }}
+              onClick={handleSearch}
+            >
               Search
             </Button>
           </Hidden>
@@ -164,16 +153,42 @@ const Hero = () => {
               color='primary'
               onClick={handleSearch}
               sx={{
-                minWidth: 120, // Ensuring the width aligns with other input fields
-                height: 56, // Match the height of the TextFields
-                borderRadius: '4px', // Match the border radius of the TextFields
-                margin: '0 8px', // Consistent spacing
+                minWidth: 120,
+                height: 56,
+                borderRadius: '4px',
+                margin: '0 8px',
               }}
             >
               <SearchIcon />
             </Button>
           </Hidden>
         </Paper>
+        <Box mt={4}>
+          {searchResults.clinics && (
+            <Box>
+              <Typography variant='h6'>Clinics</Typography>
+              <ul>
+                {searchResults.clinics.map((clinic: any) => (
+                  <li key={clinic.id}>
+                    {clinic.name} - {clinic.location}
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          )}
+          {searchResults.doctors && (
+            <Box>
+              <Typography variant='h6'>Doctors</Typography>
+              <ul>
+                {searchResults.doctors.map((doctor: any) => (
+                  <li key={doctor.id}>
+                    {doctor.user.name} - {doctor.location}
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          )}
+        </Box>
       </Container>
     </Box>
   );

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import {
   Box,
-  Typography,
   Paper,
   Button,
   Table,
@@ -19,22 +18,28 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
-import { Patient } from '../types';
+import { Patient } from '@prisma/client';
+
+type PatientForm = {
+  name: string;
+  email: string;
+  password: string;
+};
 
 const AdminManagePatients: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [patientForm, setPatientForm] = useState<{
-    name: string;
-    email: string;
-    password: string;
-  }>({ name: '', email: '', password: '' });
+  const [patientForm, setPatientForm] = useState<PatientForm>({
+    name: '',
+    email: '',
+    password: '',
+  });
 
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
       const response = await fetch('/api/admin/patients');
-      const data = await response.json();
+      const data: Patient[] = await response.json();
       setPatients(data);
     };
 
@@ -43,8 +48,8 @@ const AdminManagePatients: React.FC = () => {
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
-    form: any,
-    setForm: React.Dispatch<React.SetStateAction<any>>
+    form: PatientForm,
+    setForm: React.Dispatch<React.SetStateAction<PatientForm>>
   ) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -53,9 +58,9 @@ const AdminManagePatients: React.FC = () => {
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
     url: string,
-    form: any,
-    setForm: React.Dispatch<React.SetStateAction<any>>,
-    setState: React.Dispatch<React.SetStateAction<any[]>>
+    form: PatientForm,
+    setForm: React.Dispatch<React.SetStateAction<PatientForm>>,
+    setState: React.Dispatch<React.SetStateAction<Patient[]>>
   ) => {
     event.preventDefault();
     const response = await fetch(url, {
@@ -65,7 +70,7 @@ const AdminManagePatients: React.FC = () => {
       },
       body: JSON.stringify(form),
     });
-    const newItem = await response.json();
+    const newItem: Patient = await response.json();
     setState((prev) => [...prev, newItem]);
     setForm({ name: '', email: '', password: '' });
     setOpenDialog(false);

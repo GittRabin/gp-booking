@@ -105,6 +105,7 @@ model Doctor {
   userId       String              @unique
   name         String
   location     String
+  postcode     String?
   user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments DoctorAppointment[]
   clinics      ClinicDoctor[]
